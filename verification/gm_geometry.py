@@ -768,6 +768,9 @@ def _encode_model(env, A0, A1, d0, d1, base, checks):
     return {"format": "GM-A-affine-mass-dual-v1", "angle_symbols": ["u", "v"],
             "mass_interval": [0, 1], "matrix": "A0+mass*A1",
             "drive": "sqrt(1-mass)*(d0+mass*d1)",
+            "drive_representative": "s>=0",
+            "signed_drive": "s*(d0+mass*d1)",
+            "row_factor_relation": "s^2=1-mass",
             "base_normalization": "15/2 times the sectional Taylor coefficient before adding dual gain",
             "retained_order": ["nu", "eta_h_i", "eta_h_j", "eta_h_k"],
             "source_provenance": list(SOURCE_PROVENANCE), "exact_checks": checks,
@@ -825,7 +828,7 @@ def build_model(progress=lambda phase: None):
         for entry in A1.flat:
             assert all(sum(mon) == 0 for mon in entry.numer) and all(sum(mon) == 0 for mon in entry.denom), "the mass matrix slope is constant"
         checks = {"global_affine_matrix_exact": True, "global_row_factor_drive_exact": True,
-                  "global_quadratic_base_exact": True, "global_b_zero_drive_exact": True,
+                  "global_quadratic_base_exact": True, "A_b_zero_row_pole_drive_exact": True,
                   "mass_matrix_slope_constant": True, "global_first_null_exact": True,
                   "full_source_dual_and_five_kernel_identities_exact": True,
                   "bracket_image_projection_identities_exact": True,

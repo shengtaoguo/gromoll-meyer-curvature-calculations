@@ -190,6 +190,9 @@ def decode_model(source):
     assert source["mass_interval"] == [0, 1]
     assert source["matrix"] == "A0+mass*A1"
     assert source["drive"] == "sqrt(1-mass)*(d0+mass*d1)"
+    assert source["drive_representative"] == "s>=0"
+    assert source["signed_drive"] == "s*(d0+mass*d1)"
+    assert source["row_factor_relation"] == "s^2=1-mass"
     assert source["base_normalization"] == "15/2 times the sectional Taylor coefficient before adding dual gain"
     pool = []
     for rows in source["polynomials"]:
@@ -411,10 +414,11 @@ def direct_box_coefficients(power, box):
 def verify_cover(certificate, powers, angular_box, progress):
     tree = certificate["tree"]
     assert isinstance(tree, list) and 0 < len(tree) <= 100000
-    index, leaves, bounds = 0, 0, 0
+    index, leaves, bounds, coefficient_count = 0, 0, 0, 0
+    comparisons = []
 
     def visit(pending, box, depth):
-        nonlocal index, leaves, bounds
+        nonlocal index, leaves, bounds, coefficient_count
         assert depth <= 40 and index < len(tree)
         node = tree[index]
         index += 1
@@ -425,6 +429,16 @@ def verify_cover(certificate, powers, angular_box, progress):
         for name in closed:
             tensor, scale = direct_box_coefficients(powers[name], box)
             assert scale > 0 and all(c > 0 for row in tensor for c in row), "every claimed strict Bernstein coefficient must be positive after direct power reconstruction"
+            du, dv = len(tensor)-1, len(tensor[0])-1
+            minimum, i, j = min((tensor[i][j], i, j)
+                                for i in range(du+1) for j in range(dv+1))
+            count = (du+1)*(dv+1)
+            coefficient_count += count
+            comparisons.append({"node": index-1, "function": name,
+                                "box": [[str(lo), str(hi)] for lo, hi in box],
+                                "bidegree": [du, dv], "coefficient_count": count,
+                                "minimum_Bernstein_coefficient": str(Q(minimum, scale)),
+                                "minimum_location": [i, j]})
             bounds += 1
             progress("direct-Bernstein-bound-"+str(bounds))
         remaining = pending-set(closed)
@@ -444,6 +458,8 @@ def verify_cover(certificate, powers, angular_box, progress):
     assert index == len(tree), "the entire submitted tree is consumed, with both children of every split"
     assert index == 2*leaves-1, "a full single-root binary tree"
     return {"checked_boxes": index, "checked_leaf_boxes": leaves, "checked_polynomial_bounds": bounds,
+            "checked_Bernstein_coefficients": coefficient_count,
+            "comparisons": comparisons,
             "complete_tree_consumed": True, "all_strict_bounds_exact": True}
 
 
@@ -602,6 +618,7 @@ def main():
             name = "mass-coefficient-"+str(index)
             coefficients, exponents = primitive_numerator(value)
             degrees = [max(mon[j] for mon in coefficients) for j in (0, 1)]
+            assert degrees == ([32, 36] if index < 4 else [8, 8]), "the primitive bidegrees must agree with the paper"
             assert (degrees[0]+1)*(degrees[1]+1) < 25000
             powers[name] = coefficients
             result["angular_checks"].append({"name": name, "degrees": degrees, "terms": len(coefficients),
@@ -616,6 +633,8 @@ def main():
         certificate = {"tree": [{"axis": axis, "closed": ["mass-coefficient-"+str(i) for i in indices]}
                                 for axis, indices in PARTITION]}
         result["box_verification"] = verify_cover(certificate, powers, bx, progress)
+        cover = result["box_verification"]
+        assert (cover["checked_boxes"], cover["checked_leaf_boxes"], cover["checked_polynomial_bounds"]) == (29, 15, 38), "the verified subdivision must agree with the paper"
         result["completed_steps"] = 3
         save("All 38 exact sign bounds and the complete angular cover verified")
         lower, upper = Q(7, 5), Q(10, 7)
