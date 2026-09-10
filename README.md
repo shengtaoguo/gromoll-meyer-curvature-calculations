@@ -1,9 +1,8 @@
 # Curvature Calculations for the Gromoll–Meyer Sphere
 
-This repository contains the exact algebraic verification accompanying
-*A Positively Curved Metric on the Gromoll–Meyer Sphere*. The scripts
-reconstruct the curvature model from the metric formulas and verify the
-polynomial lower bounds over the complete parameter domain.
+Computations accompanying *A Positively Curved Metric on the Gromoll–Meyer
+Sphere*. The scripts verify the source identities and polynomial inequalities
+used in the paper.
 
 ## Run
 
@@ -24,10 +23,10 @@ took about three minutes on one CPU. The dependency versions are pinned in
 
 ## Paper correspondence
 
-Section 8 of the paper collects the computational verification and reproduction
-instructions. The table below links the paper's statements and formulas to the
-corresponding code. Start at [main](verification/verify_gm.py#L538), which calls
-[build_model](verification/gm_geometry.py#L779) before checking the signs.
+The [main](verification/verify_gm.py#L538) routine calls
+[build_model](verification/gm_geometry.py#L779) for the source identities,
+then checks the polynomial inequalities. References below use the paper's
+equation and proposition numbers; Section 8 describes the calculation.
 
 | Paper location | Code entry | What to compare |
 | --- | --- | --- |
@@ -52,19 +51,18 @@ normalization.
 
 In [reconstruct_five](verification/verify_gm.py#L320), `small`,
 `reduced_drive`, and `retained` are the paper's `S`, `b_*`, and `v_*`.
-The code's `x` is `x_0`, not the moving vector `s*x_0`: the factor `s` is
-included through `s^2 = 1-m` when forming the full gain in equation (7.11).
+The code's `x` denotes `x_0`. The factor `s` enters through `s^2 = 1-m`
+when forming the gain in equation (7.11).
 The returned `elevated` list is exactly the five functions in equation (7.12).
 
 ## Scope
 
-The identity and sign checks use exact rational and integer arithmetic. No
-curvature samples or saved polynomial data are inputs. The proposed
-[subdivision](verification/verify_gm.py#L47) is checked afresh, including both
-children of every split and all five functions on every leaf.
+The checks use exact rational and integer arithmetic, with no sampled curvature
+values or saved polynomial data. The [subdivision](verification/verify_gm.py#L47)
+is checked on both children of every split and for all five functions on each
+terminal rectangle.
 
-The B routine checks the rational constants in the paper's direct
-Cauchy–Schwarz argument. The geometric source identity in Section 6, and the
-quotient geometry, complete zero-plane classification, smoothness, and
-small-parameter completion in Sections 2–4, are mathematical arguments in the
-paper; the scripts do not formalize those arguments.
+The B routine evaluates the norm sums in the Cauchy–Schwarz estimate. Its
+geometric source identity is proved in Section 6. The quotient geometry,
+zero-plane classification, smoothness, and small-parameter argument are in
+Sections 2–4.
