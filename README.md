@@ -4,20 +4,14 @@ Companion to *A Positively Curved Metric on the Gromoll–Meyer Sphere*.
 
 ## Run
 
-In a repository clone, the two scripts are in `verification/`. Run the following commands from that directory.
+With Python 3.11, run from the repository root:
 
 ```sh
-python -m pip install numpy==2.4.1 sympy==1.14.0 python-flint==0.9.0
-python verify_gm.py
+python -m pip install -r verification/requirements.txt
+python verification/verify_gm.py
 ```
 
-Success prints `PASS` and the A and B curvature bounds; failure exits with a
-nonzero status. The default run creates no output files. Assertions must be
-enabled: do not use Python's `-O` option.
-
-The September 11 revision was tested with Python 3.11.9 on Windows using the
-pinned dependencies and took about 75 seconds with Python restricted to one
-CPU. The same versions are listed in [requirements.txt](verification/requirements.txt).
+A successful run prints `PASS` and the A and B curvature bounds.
 
 ## Paper correspondence
 
@@ -59,7 +53,7 @@ is the five functions in (7.12).
 ## Optional result record
 
 ```sh
-python verify_gm.py --output result.json
+python verification/verify_gm.py --output result.json
 ```
 
 The result records every comparison's rectangle, function index, bidegree,
