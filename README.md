@@ -15,10 +15,6 @@ A successful run prints `PASS` and the A and B curvature bounds.
 
 ## Paper correspondence
 
-The [main](verification/verify_gm.py#L554) routine calls [build_model](verification/gm_geometry.py#L782) to reconstruct the source
-identities, then verifies the polynomial inequalities. Numbers below refer
-to the September 11 manuscript; Section 8 describes the exact computations.
-
 | Paper location | Code entry | What to compare |
 | --- | --- | --- |
 | Equations (2.6)–(2.7), frame conversion (5.2) | [_H_tilde](verification/gm_geometry.py#L267), [_J_jets](verification/gm_geometry.py#L281) | The tensors `H/sqrt(2)` and `J` in the rational Lie frame. |
