@@ -1,6 +1,6 @@
 # Curvature Calculations for the Gromoll–Meyer Sphere
 
-Companion to *A Positively Curved Metric on the Gromoll–Meyer Sphere*.
+Companion to *A Two-Stage Construction of Positive Curvature on the Gromoll–Meyer Sphere*.
 
 ## Run
 
