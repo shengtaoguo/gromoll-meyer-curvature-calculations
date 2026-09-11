@@ -1,7 +1,6 @@
 # Curvature Calculations for the Gromoll–Meyer Sphere
 
 Companion to *A Positively Curved Metric on the Gromoll–Meyer Sphere*.
-Fixed code version: [manuscript-2026-09-11](https://github.com/shengtaoguo/gromoll-meyer-curvature-calculations/tree/manuscript-2026-09-11) in the private repository.
 
 ## Run
 
